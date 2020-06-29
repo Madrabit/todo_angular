@@ -1,2 +1,2 @@
 # todo_angular
-Angulat + Spring app
+Angular + Spring app
