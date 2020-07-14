@@ -1,0 +1,41 @@
+.pointer {
+  cursor: pointer;
+}
+
+.completed {
+  text-decoration: line-through;
+  color: #797979;
+}
+
+.novalue {
+  color: #b7b7b7;
+}
+
+table {
+  width: 100%;
+}
+
+.col-color {
+  width: 1%;
+}
+
+.col-id {
+  width: 2%;
+  text-align: center;
+}
+
+.col-title {
+  width: 40%;
+}
+
+.col-date {
+  width: 10%;
+}
+
+.col-priority {
+  width: 10%;
+}
+
+.col-category {
+  width: 10%;
+}
