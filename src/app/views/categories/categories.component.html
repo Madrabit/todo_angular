@@ -12,7 +12,7 @@
       <li class="nav-item pointer"
           *ngFor="let category of categories"
           (click)="showTasksByCategory(category)"
-          [class.active]="selectedCategories === category"
+          [class.active]="selectedCategory === category"
       >
         <a class="nav-link">
           <p>{{category.title}}</p>

@@ -1,10 +1,10 @@
-import {CommonDao} from './CommonDao';
 import {Task} from '../../../model/Task';
 import {Priority} from '../../../model/Priority';
 import {Observable} from 'rxjs';
 import {Category} from '../../../model/Category';
+import {CommonDao} from "./CommonDao";
 
-export interface TaskDao extends CommonDao<Task> {
+export interface TaskDao extends CommonDao<Task>{
 
   /**
    * Поиск тасков сразу по группе параметров.

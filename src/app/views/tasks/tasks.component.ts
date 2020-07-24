@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {DataHandlerService} from '../../service/data-handler.service';
 import {Task} from 'src/app/model/Task';
 import {MatTableDataSource} from '@angular/material/table';
@@ -10,7 +10,7 @@ import {MatSort} from '@angular/material/sort';
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.css']
 })
-export class TasksComponent implements OnInit, AfterViewInit {
+export class TasksComponent implements OnInit {
 
   TASK_COMPLETED = '#F8F9FA';
   NOCOLOR = '#fff';
@@ -33,22 +33,40 @@ export class TasksComponent implements OnInit, AfterViewInit {
 
   tasks: Task[];
 
+  /**
+   * DataSourse не видит поля tasks. И вытягивает данные только через сеттер.
+   * @param tasks
+   */
+  @Input('tasks')
+  public set setTasks(tasks: Task[]) {
+    this.tasks = tasks;
+    this.fillTable();
+  }
+
   constructor(private dataHandlerService: DataHandlerService) {
   }
 
   ngOnInit(): void {
-    this.dataHandlerService.tasksSubject.subscribe(tasks => this.tasks = tasks);
 
     // Инициализируется переменная. В эту перменную можно подключить любой источник данных
     this.dataSource = new MatTableDataSource();
 
-    this.refreshTable();
+    this.fillTable();
   }
 
   /**
    * Вызывается после рендеринга HTML и прикрепляет компоненты сортировки, пагинации.
+   * Показывает таски с применением всех условий. (поиск, фильтры, категории)
+   *
    */
-  ngAfterViewInit(): void {
+  private fillTable() {
+
+    if (!this.dataSource) {
+      return;
+    }
+    // Обновляет источник данных
+    this.dataSource.data = this.tasks;
+
     this.addTableObjects();
 
 
@@ -77,14 +95,6 @@ export class TasksComponent implements OnInit, AfterViewInit {
 
   toggleClassComplete(task: Task) {
     task.completed = !task.completed;
-  }
-
-  /**
-   * Показывает таски с применением всех условий. (поиск, фильтры, категории)
-   */
-  private refreshTable() {
-    // Обновляет источник данных
-    this.dataSource.data = this.tasks;
   }
 
   public getPriorityColor(task: Task) {
