@@ -14,8 +14,11 @@ export class AppComponent implements OnInit {
   tasks: Task[];
   categories: Category[];
 
+  currentTask: Task;
+
   private selectedCategory: Category = null;
 
+  private selectedTask: Task = null;
 
   constructor(
     private dataHandler: DataHandlerService, // фасад для работы с данными
@@ -27,6 +30,8 @@ export class AppComponent implements OnInit {
     this.dataHandler.getAllCategories().subscribe(categories => this.categories = categories);
 
     this.onSelectCategory(null); // показать все задачи
+
+    this.onUpdateTask(null);
 
   }
 
@@ -47,4 +52,7 @@ export class AppComponent implements OnInit {
 
   }
 
+  onUpdateTask(task: Task) {
+    console.log(task);
+  }
 }

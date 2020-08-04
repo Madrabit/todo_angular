@@ -83,7 +83,9 @@
 
           <div class="col-12">
 
-            <app-tasks [tasks]="tasks"></app-tasks>
+            <app-tasks
+              (updateTask)="onUpdateTask($event)"
+              [tasks]="tasks"></app-tasks>
           </div>
         </div>
       </div>
