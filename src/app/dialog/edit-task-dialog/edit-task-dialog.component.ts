@@ -2,6 +2,9 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {DataHandlerService} from '../../service/data-handler.service';
 import {Task} from 'src/app/model/Task';
+import {Category} from '../../model/Category';
+import {Priority} from '../../model/Priority';
+import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-edit-task-dialog',
@@ -18,18 +21,32 @@ export class EditTaskDialogComponent implements OnInit {
   ) {
   }
 
+  dialogTitle: string; // заголовок окна
+  task: Task; // задача для редактирования
+  tmpTitle: string; // временная переменная, на случай если пользователь нажмет "отмена"
+  categories: Category[];
+  tmpCategory: Category;
+  tmpPriority: Priority;
+  priorities: Priority[];
+  tmpCompleted: boolean;
+  tmpDate: Date;
+
+
   ngOnInit(): void {
     this.task = this.data[0];
     this.dialogTitle = this.data[1];
     this.tmpTitle = this.task.title;
+    this.tmpCategory = this.task.category;
+    this.tmpPriority = this.task.priority;
+    this.tmpCompleted = this.task.completed;
+    this.tmpDate = this.task.date;
 
-    console.log(this.task);
-    console.log(this.dialogTitle);
+
+    this.dataHandlerService.getAllCategories().subscribe(items => this.categories = items);
+    this.dataHandlerService.getAllProperties().subscribe(items => this.priorities = items);
+
   }
 
-  dialogTitle: string; // заголовок окна
-  task: Task; // задача для редактирования
-  tmpTitle: string; // временная переменная, на случай если пользователь нажмет "отмена"
 
   onUpdateTask($event: any) {
 
@@ -37,6 +54,9 @@ export class EditTaskDialogComponent implements OnInit {
 
   onConfirm(): void {
     this.task.title = this.tmpTitle;
+    this.task.category = this.tmpCategory;
+    this.task.priority = this.tmpPriority;
+    this.task.date = this.tmpDate;
 
     // передаем задачу в обработчик
     this.dialogRef.close(this.task);
@@ -44,5 +64,31 @@ export class EditTaskDialogComponent implements OnInit {
 
   onCancel() {
     this.dialogRef.close(null);
+  }
+
+   delete() {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent,
+      {
+        maxWidth: '500px',
+        data: {
+          dialogTitle: 'Подтвердите действие',
+          message: `Вы действительно хотите удалить задачу: "${this.task.title}"?`
+        },
+        autoFocus: false
+      });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.dialogRef.close('delete');
+        return;
+      }
+    });
+  }
+
+  activate() {
+    this.dialogRef.close('activate');
+  }
+
+  complete() {
+    this.dialogRef.close('complete');
   }
 }

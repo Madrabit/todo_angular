@@ -12,8 +12,9 @@ export class TaskDaoArray implements TaskDao {
   }
 
   delete(id: number): Observable<Task> {
-    // of(TestData.tasks.filter(value => value.id !== id));
-    return undefined;
+    const taskTmp = TestData.tasks.find(t => t.id === id); // обновляем по id
+    TestData.tasks.splice(TestData.tasks.indexOf(taskTmp), 1);
+    return of(taskTmp);
   }
 
   get(id: number): Observable<Task> {
@@ -47,8 +48,9 @@ export class TaskDaoArray implements TaskDao {
   }
 
   update(task: Task): Observable<Task> {
-    const taskTmp = TestData.tasks.find(t => t.id = task.id);
+    const taskTmp = TestData.tasks.find(t => t.id === task.id); // обновляем по id
     TestData.tasks.splice(TestData.tasks.indexOf(taskTmp), 1, task);
+
     return of(task);
   }
 
