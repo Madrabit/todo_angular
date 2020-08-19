@@ -33,7 +33,7 @@
           <td class="col-title pointer"
               *matCellDef="let task"
               [class.completed]="task.completed"
-              (click)="onClickTask(task)"
+              (click)="openEditTaskDialog(task)"
               mat-cell
           >
             {{task.title}}
