@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
 
   currentTask: Task;
 
-  private selectedCategory: Category = null;
+  selectedCategory: Category = null;
 
   private selectedTask: Task = null;
 
@@ -75,6 +75,19 @@ export class AppComponent implements OnInit {
       ).subscribe(tasks => {
         this.tasks = tasks;
       });
+    });
+  }
+
+  onDeleteCategory(category: Category) {
+    this.dataHandler.deleteCategory(category.id).subscribe(() => {
+      this.selectedCategory = null; // открываем категории "Все"
+      this.onSelectCategory(this.selectedCategory);
+    });
+  }
+
+  onUpdateCategory(category: Category) {
+    this.dataHandler.updateCategory(category).subscribe(() => {
+      this.onSelectCategory(this.selectedCategory);
     });
   }
 }

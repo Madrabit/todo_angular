@@ -1,6 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {DataHandlerService} from "../../service/data-handler.service";
-import {Category} from "../../model/Category";
+import {DataHandlerService} from '../../service/data-handler.service';
+import {Category} from '../../model/Category';
+import {EditTaskDialogComponent} from '../../dialog/edit-task-dialog/edit-task-dialog.component';
+import {Task} from '../../model/Task';
+import {EditCategoryDialogComponent} from '../../dialog/edit-category-dialog/edit-category-dialog.component';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-categories',
@@ -16,9 +20,18 @@ export class CategoriesComponent implements OnInit {
   @Output()
   selectCategory = new EventEmitter<Category>();
 
-  selectedCategory: Category;
+  @Output()
+  deleteCategory = new EventEmitter<Category>();
 
-  constructor(private dataHandler: DataHandlerService) {
+  @Output()
+  updateCategory = new EventEmitter<Category>();
+
+  @Input()
+  selectedCategory: Category;
+  indexMouseMove: number;
+
+  constructor(private dataHandlerService: DataHandlerService,
+              private dialog: MatDialog) {
   }
 
   // метод вызывается автоматически после инициализации компонента
@@ -38,5 +51,31 @@ export class CategoriesComponent implements OnInit {
 
     // вызываем внешний обработчик и передаем туда выбранную категорию
     this.selectCategory.emit(this.selectedCategory);
+  }
+
+  showEditIcon(index: number) {
+    this.indexMouseMove = index;
+
+  }
+
+  openEditDialog(category: Category) {
+    const dialogRef = this.dialog.open(EditCategoryDialogComponent,
+      {
+        data: ['Редактирование категории', category.title ],
+        autoFocus: false
+      });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'delete') {
+        this.deleteCategory.emit(category);
+        return;
+      }
+      if (typeof (result) === 'string') { // нажали сохранить
+        category.title = result as string;
+
+        this.updateCategory.emit(category); // вызываем внешний обработчик
+        return;
+      }
+
+    });
   }
 }

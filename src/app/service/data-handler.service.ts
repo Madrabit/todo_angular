@@ -42,4 +42,12 @@ export class DataHandlerService {
   deleteTask(id: number) {
     return this.taskDaoArray.delete(id);
   }
+
+  updateCategory(category: Category) {
+    return this.categoryDaoArray.update(category);
+  }
+
+  deleteCategory(id: number) {
+    return this.categoryDaoArray.delete(id);
+  }
 }

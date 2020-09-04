@@ -48,7 +48,7 @@
               [ngClass]="{'completed': task.completed, 'novalue': task.date == null}"
               mat-cell
           >
-            {{task.date | date: 'medium'}}
+            {{task.date | taskDate}}
           </td>
         </ng-container>
 
@@ -69,13 +69,57 @@
           <th *matHeaderCellDef mat-header-cell mat-sort-header>Категория</th>
           <td class="col-category "
               *matCellDef="let task"
-
-              [ngClass]="{'completed': task.completed,
-                          'novalue': task.category == null,
-                          'link': !task.completed && task.category}"
               mat-cell
+              [ngClass]="{'completed': task.completed, 'novalue': task.category == null, 'link': !task.completed && task.category}"
+
+              (click)="!task.completed && task.category && onSelectCategory(task.category)"
           >
             {{task.category ? task.category.title : 'Без категории'}}
+          </td>
+        </ng-container>
+
+        <!--доступные действия над задачей-->
+        <ng-container matColumnDef="operations">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td class="col-operations" mat-cell *matCellDef="let task" [class.completed]="task.completed">
+
+            <button mat-icon-button (click)="openDeleteDialog(task)"
+                    class="delete-icon"
+            >
+              <mat-icon aria-hidden="false">delete</mat-icon>
+            </button>
+
+
+            <button mat-icon-button (click)="openEditTaskDialog(task)"
+                    class="edit-icon"
+            >
+
+              <mat-icon aria-hidden="false">edit</mat-icon>
+            </button>
+
+          </td>
+        </ng-container>
+
+
+        <!--            галочка для выполнения/активации задачи-->
+        <ng-container matColumnDef="select">
+
+          <th mat-header-cell *matHeaderCellDef></th>
+
+          <td class="col-select text-right" mat-cell *matCellDef="let task">
+
+            <mat-checkbox
+
+              (click)="$event.stopPropagation()"
+
+              (change)="$event ? onToggleStatus(task) : null"
+
+              [checked]="task.completed"
+            >
+
+            </mat-checkbox>
+
+
           </td>
         </ng-container>
 
