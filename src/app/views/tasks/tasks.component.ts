@@ -8,6 +8,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {EditTaskDialogComponent} from '../../dialog/edit-task-dialog/edit-task-dialog.component';
 import {ConfirmDialogComponent} from '../../dialog/confirm-dialog/confirm-dialog.component';
 import {Category} from '../../model/Category';
+import {Priority} from '../../model/Priority';
+import {OperType} from '../../dialog/OperType';
 
 @Component({
   selector: 'app-tasks',
@@ -37,6 +39,7 @@ export class TasksComponent implements OnInit {
 
   tasks: Task[];
 
+
   /**
    * DataSourse не видит поля tasks. И вытягивает данные только через сеттер.
    * @param tasks
@@ -47,18 +50,42 @@ export class TasksComponent implements OnInit {
     this.fillTable();
   }
 
+  @Input('priorities')
+  public set setPriorities(priorities: Priority[]) {
+    this.priorities = priorities;
+  }
+
+  priorities: Priority[];
+
   @Output()
   deleteTask = new EventEmitter<Task>();
+
+  @Output()
+  selectCategory = new EventEmitter<Category>();
 
   @Output()
   updateTask = new EventEmitter<Task>();
 
   @Output()
-  selectCategory = new EventEmitter<Category>();
+  filterByTitle = new EventEmitter<string>();
+
+  @Output()
+  filterByStatus = new EventEmitter<boolean>();
+
+  @Output()
+  filterByPriority = new EventEmitter<Priority>();
+
+  @Output()
+  addTask = new EventEmitter<Task>();
 
   selectedTask: Task;
 
+  @Input()
   selectedCategory: Category;
+
+  searchTaskText: string;
+  selectedStatusFilter: boolean = null;
+  selectedPriorityFilter: Priority;
 
   constructor(
     private dataHandlerService: DataHandlerService,
@@ -144,8 +171,8 @@ export class TasksComponent implements OnInit {
 
     const dialogRef = this.dialog.open(EditTaskDialogComponent,
       {
-        data: [task, 'Редактирование задачи'],
-        autoFocus: false
+        data: [task, 'Редактирование задачи', OperType.EDIT],
+        autoFocus: false,
       });
     dialogRef.afterClosed().subscribe(result => {
       if (result === 'delete') {
@@ -198,4 +225,39 @@ export class TasksComponent implements OnInit {
     this.selectCategory.emit(category);
   }
 
+  // фильтрация по названию
+  onFilterByTitle() {
+    this.filterByTitle.emit(this.searchTaskText);
+  }
+
+  // фильтрация по статусу
+  onFilterByStatus(value: boolean) {
+
+    // на всякий случай проверяем изменилось ли значение (хотя сам UI компонент должен это делать)
+    if (value !== this.selectedStatusFilter) {
+      this.selectedStatusFilter = value;
+      this.filterByStatus.emit(this.selectedStatusFilter);
+    }
+  }
+
+  onFilterByPriority(priority: Priority) {
+    this.selectedPriorityFilter = priority;
+    this.filterByPriority.emit(this.selectedPriorityFilter);
+  }
+
+// диалоговое окно для добавления задачи
+  openAddTaskDialog() {
+
+    // то же самое, что и при редактировании, но только передаем пустой объект Task
+    const task = new Task(null, '', false, null, this.selectedCategory);
+
+    const dialogRef = this.dialog.open(EditTaskDialogComponent, {data: [task, 'Добавление задачи', OperType.ADD]});
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) { // если нажали ОК и есть результат
+        this.addTask.emit(task);
+      }
+    });
+
+  }
 }

@@ -5,6 +5,7 @@ import {EditTaskDialogComponent} from '../../dialog/edit-task-dialog/edit-task-d
 import {Task} from '../../model/Task';
 import {EditCategoryDialogComponent} from '../../dialog/edit-category-dialog/edit-category-dialog.component';
 import {MatDialog} from '@angular/material/dialog';
+import {OperType} from '../../dialog/OperType';
 
 @Component({
   selector: 'app-categories',
@@ -29,6 +30,9 @@ export class CategoriesComponent implements OnInit {
   @Input()
   selectedCategory: Category;
   indexMouseMove: number;
+
+  @Output()
+  addCategory = new EventEmitter<string>();
 
   constructor(private dataHandlerService: DataHandlerService,
               private dialog: MatDialog) {
@@ -61,7 +65,7 @@ export class CategoriesComponent implements OnInit {
   openEditDialog(category: Category) {
     const dialogRef = this.dialog.open(EditCategoryDialogComponent,
       {
-        data: ['Редактирование категории', category.title ],
+        data: ['Редактирование категории', category.title, OperType.EDIT],
         autoFocus: false
       });
     dialogRef.afterClosed().subscribe(result => {
@@ -77,5 +81,18 @@ export class CategoriesComponent implements OnInit {
       }
 
     });
+  }
+
+  openAddCategoryDialog() {
+    // то же самое, что и при редактировании, но только передаем пустой объект Task
+
+    const dialogRef = this.dialog.open(EditCategoryDialogComponent, {data: ['Добавление категори', '', OperType.EDIT]});
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) { // если нажали ОК и есть результат
+        this.addCategory.emit(result as string);
+      }
+    });
+
   }
 }

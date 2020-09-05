@@ -50,4 +50,12 @@ export class DataHandlerService {
   deleteCategory(id: number) {
     return this.categoryDaoArray.delete(id);
   }
+
+  addTask(task: Task) {
+    return this.taskDaoArray.add(task);
+  }
+
+  addCategory(title: string) {
+    return this.categoryDaoArray.add(new Category(null, title));
+  }
 }

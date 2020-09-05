@@ -80,6 +80,7 @@
     <button
       mat-button
       class="red"
+      *ngIf="canDelete()"
       (click)="delete()"
     >
       Удалить задачу
@@ -88,14 +89,13 @@
     <button
       mat-raised-button
       (click)="activate()"
-      *ngIf="task.completed"
+      *ngIf="task.completed && canActivateDesactivate()"
     >Активировать
     </button>
     <button
       mat-raised-button
       (click)="complete()"
-      *ngIf="!task.completed"
-    >Завершить
+      *ngIf="!task.completed && canActivateDesactivate()"    >Завершить
     </button>
   </div>
 

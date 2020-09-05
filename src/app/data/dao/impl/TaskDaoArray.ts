@@ -7,8 +7,20 @@ import {TestData} from '../../TestData';
 import {Test} from 'tslint';
 
 export class TaskDaoArray implements TaskDao {
-  add(T) {
-    of(TestData.tasks.fill(T));
+  add(task: Task): Observable<Task> {
+
+    // если id пустой - генерируем его
+    if (task.id === null || task.id === 0) {
+      task.id = this.getLastIdTask();
+    }
+    TestData.tasks.push(task);
+
+    return of(task);
+  }
+
+  // находит последний id (чтобы потом вставить новую запись с id, увеличенным на 1) - в реальной БД это происходит автоматически
+  private getLastIdTask(): number {
+    return Math.max.apply(Math, TestData.tasks.map(task => task.id)) + 1;
   }
 
   delete(id: number): Observable<Task> {
@@ -43,8 +55,35 @@ export class TaskDaoArray implements TaskDao {
 
   search(category: Category, searchText: string, status: boolean, priority: Priority): Observable<Task[]> {
 
-    return of(this.searchTodo(category, searchText, status, priority));
+    return of(this.searchTasks(category, searchText, status, priority));
 
+  }
+
+  private searchTasks(category: Category, searchText: string, status: boolean, priority: Priority): Task[] {
+
+    let allTasks = TestData.tasks;
+
+    // поочереди применяем все условия (какие не пустые)
+    if (status != null) {
+      allTasks = allTasks.filter(task => task.completed === status);
+    }
+
+    if (category != null) {
+      allTasks = allTasks.filter(task => task.category === category);
+    }
+
+    if (priority != null) {
+      allTasks = allTasks.filter(task => task.priority === priority);
+    }
+
+    if (searchText != null) {
+      allTasks = allTasks.filter(
+        task =>
+          task.title.toUpperCase().includes(searchText.toUpperCase()) // учитываем текст поиска (если '' - возвращаются все значения)
+      );
+    }
+
+    return allTasks;
   }
 
   update(task: Task): Observable<Task> {
